@@ -90,7 +90,7 @@ def escenario(filas):
 # ---------------------------------------------------------------- portada
 doc.add_heading("Taller de experimentación con JMeter: ¿Qué pasaría si...?", 0)
 p("Pruebas de software, taller de rendimiento. Trabajo individual.")
-p("Estudiante: ____________________")
+p("Estudiante: Julian Andres Mendoza Castro, código A00395237")
 p("Repositorio: monorepo tiquetmania (api/, pruebas/, .github/workflows/). Los planes, los resultados "
   "y los reportes HTML de cada corrida están en pruebas/experimentacion/.")
 
