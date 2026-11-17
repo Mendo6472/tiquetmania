@@ -1,0 +1,27 @@
+{
+  "escenario": "q5_1min",
+  "pregunta": "P5",
+  "plan": "Experimentacion.jmx",
+  "propiedades": {
+    "hilos": 200,
+    "subida": 30,
+    "duracion": 60,
+    "modo": "flujo"
+  },
+  "repeticion": 2,
+  "inicio": "2026-11-16T20:36:26",
+  "duracion_s": 63.5,
+  "codigo_salida": 0,
+  "comando": "jmeter -n -t Experimentacion.jmx -Jhilos=200 -Jsubida=30 -Jduracion=60 -Jmodo=flujo",
+  "entorno": {
+    "equipo": "LAPTOP-2JFTEID6",
+    "so": "Windows-11-10.0.26200-SP0",
+    "procesador": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "nucleos_logicos": 12,
+    "ram_gb": 23.7,
+    "python": "3.12.10",
+    "java": "openjdk version \"21.0.12.1\" 2026-08-18 LTS",
+    "jmeter": "5.6.3",
+    "api_y_jmeter_en_el_mismo_equipo": true
+  }
+}

@@ -1,0 +1,6 @@
+*.jtl
+jmeter.log
+__pycache__/
+pruebas/jmeter/reporte/
+# Los reportes HTML de JMeter se regeneran con los scripts (y hay capturas en entrega/img)
+pruebas/experimentacion/resultados/*/r*/reporte/

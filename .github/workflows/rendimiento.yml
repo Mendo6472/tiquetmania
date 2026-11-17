@@ -1,0 +1,71 @@
+name: Pruebas de rendimiento (JMeter)
+
+# Se ejecuta con cada push a main y a mano desde la pestana Actions.
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  jmeter:
+    runs-on: ubuntu-latest
+    env:
+      JMETER_VERSION: "5.6.3"
+    steps:
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Java 17 (JMeter 5.6.3 lo necesita)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Instalar JMeter 5.6.3
+        run: |
+          curl -fsSL -o jmeter.tgz "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz"
+          tar -xzf jmeter.tgz
+          echo "$PWD/apache-jmeter-${JMETER_VERSION}/bin" >> "$GITHUB_PATH"
+
+      - name: Levantar la API en el puerto 8080
+        run: |
+          nohup python3 api/ticketmania_simple.py > api.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/api/salud | grep -q '"OK"'; then
+              echo "API arriba"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "La API no respondio en /api/salud"
+          cat api.log
+          exit 1
+
+      - name: Ejecutar JMeter en modo no-GUI
+        working-directory: pruebas/jmeter
+        run: |
+          jmeter -n -t Ticketmania.jmx -l resultados.jtl -e -o reporte
+
+      - name: Decidir si la prueba paso
+        working-directory: pruebas/jmeter
+        run: |
+          # JMeter termina en verde aunque una peticion falle, asi que se revisa el .jtl.
+          python3 - <<'PY'
+          import csv, sys
+          total = fallidas = 0
+          with open("resultados.jtl", newline="", encoding="utf-8") as f:
+              for fila in csv.DictReader(f):
+                  total += 1
+                  if fila["success"].strip().lower() != "true":
+                      fallidas += 1
+          print(f"Muestras: {total}  Fallidas: {fallidas}")
+          if total == 0 or fallidas > 0:
+              sys.exit(1)
+          PY
+
+      - name: Subir el reporte
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-rendimiento
+          path: pruebas/jmeter/reporte
